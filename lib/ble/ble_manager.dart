@@ -48,7 +48,7 @@ class BLEManager {
     discoveredSubscription = centralManager.discovered.listen(
       (eventArgs) {
         if (eventArgs.advertisement.name != null && !periphericals.contains(eventArgs.advertisement.name)) {
-          print('Discovered: ${eventArgs.advertisement.name} -> ${eventArgs.peripheral.uuid}');
+          debugPrint('Discovered: ${eventArgs.advertisement.name} -> ${eventArgs.peripheral.uuid}');
           // Ajout du nom du périphérique à la liste des périphériques découverts
           periphericals.add(eventArgs.advertisement.name!); 
           

@@ -13,13 +13,14 @@ void onStartUp() async {
 }
 
 void onCrashed(Object error, StackTrace stackTrace) {
-  print(error);
+  debugPrint(error.toString());
 }
 
 class HomePageWidget extends StatefulWidget {
   const HomePageWidget({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomePageWidgetState createState() => _HomePageWidgetState();
 }
 

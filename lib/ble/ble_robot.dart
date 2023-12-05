@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+import 'package:flutter/material.dart';
 import 'ble_manager.dart';
 import 'ble_peripheral.dart';
 
@@ -47,10 +49,10 @@ class BLERobot {
 
     // Fonction de rappel, lorsqu'un périphérique est trouvé
     _manager.onPeripheralFound = (peripheral) async {
-      print('Périphérique trouvé: $peripheral, state: ${peripheral.state.value}');
+      debugPrint('Périphérique trouvé: $peripheral, state: ${peripheral.state.value}');
       _peripheral = peripheral;
       _peripheral.onPeripheralReady = () async {
-        print('Robot connecté.');
+        debugPrint('Robot connecté.');
         onRobotReady?.call();
       };
       await _manager.stopDiscovery();
@@ -61,7 +63,7 @@ class BLERobot {
 
       // On écoute les changements de valeur de la caractéristique.
       _peripheral.characteristic.addListener(() {
-        print('Characteristic changed: ${_peripheral.characteristic.value}');
+        debugPrint('Characteristic changed: ${_peripheral.characteristic.value}');
       });  
     };
   }
@@ -75,7 +77,7 @@ class BLERobot {
   /// Envoie une commande au robot.
   Future<void> sendCommand(RobotActionType action, String value) async {    
     if(!isConnected) {
-      print('Périphérique non connecté.');
+      debugPrint('Périphérique non connecté.');
       return;
     }
     if (value == "") {
@@ -88,7 +90,7 @@ class BLERobot {
   /// Envoie une demande de lecture de télémétrie au robot.
   Future<String> readTelemetry(TelemetryType type) async {    
     if(!isConnected) {
-      print('Périphérique non connecté.');
+      debugPrint('Périphérique non connecté.');
       return '';
     }
     return _peripheral.read(type.index.toString());

@@ -7,6 +7,7 @@ class FunctionsWidget extends StatefulWidget {
   const FunctionsWidget({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _FunctionsWidgetState createState() => _FunctionsWidgetState();
 }
 
@@ -34,7 +35,7 @@ class _FunctionsWidgetState extends State<FunctionsWidget> {
 
   Future<void> startDiscovery() async {
     await _robot.tryConnect();
-    print("Scan Bluetooth en cours...");
+    debugPrint("Scan Bluetooth en cours...");
   }
 
 
@@ -60,7 +61,7 @@ class _FunctionsWidgetState extends State<FunctionsWidget> {
               color: Theme.of(context).colorScheme.background,
             )
           ),
-          actions: [],
+          actions: const [],
           centerTitle: false,
           elevation: 2,
         ),
@@ -92,11 +93,11 @@ class _FunctionsWidgetState extends State<FunctionsWidget> {
                             onPressed: () { 
                               // Vérification de la connexion avant de lancer la fonction
                               if (_connected) {
-                                print("Fonction: Avancer 50cm");
+                                debugPrint("Fonction: Avancer 50cm");
                                 _robot.sendCommand(RobotActionType.Forward, '50');
                               }
                               else {
-                                print("Fonction: Avancer 50cm (non connecté)");
+                                debugPrint("Fonction: Avancer 50cm (non connecté)");
                               }
                             },
                             child: const Text('Avancer 50cm'),
@@ -112,11 +113,11 @@ class _FunctionsWidgetState extends State<FunctionsWidget> {
                             onPressed: () async { 
                               // Vérification de la connexion avant de lancer la fonction
                               if(_connected) {
-                                print("Fonction: Arrêt d'urgence");
+                                debugPrint("Fonction: Arrêt d'urgence");
                                 _robot.sendCommand(RobotActionType.Stop, '0');
                               }
                               else {
-                                print("Fonction: Arrêt d'urgence (non connecté)");
+                                debugPrint("Fonction: Arrêt d'urgence (non connecté)");
                               }
                             },
                             child: const Text('Arrêt d\'urgence'),

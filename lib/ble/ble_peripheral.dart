@@ -115,11 +115,11 @@ class BLEPeripheral {
 
   /// Défini le service et la caractéristique à utiliser.
   Future<void> setActiveCharacteristic(String srvUuid, String charUuid) async {
-    print('  -> Recherche du service $srvUuid et de la caractéristique $charUuid');
+    debugPrint('  -> Recherche du service $srvUuid et de la caractéristique $charUuid');
     for (var srv in services.value) {
       if(srv.uuid.toString() == srvUuid) {
         service.value = srv;
-        print('  -> Service trouvé: ${service.value?.uuid.toString()}');
+        debugPrint('  -> Service trouvé: ${service.value?.uuid.toString()}');
         characteristic.value = null;
         if (service.value == null) {
           break;
@@ -129,7 +129,7 @@ class BLEPeripheral {
         // Si on a trouvé le service, on cherche la caractéristique demandée
         for (var car in characteristics.value) {
           if (car.uuid.toString() == charUuid) {
-            print('  -> Caractéristique trouvée: ${car.uuid.toString()}');
+            debugPrint('  -> Caractéristique trouvée: ${car.uuid.toString()}');
             characteristic.value = car;
             _ready = true;
             onPeripheralReady?.call();
