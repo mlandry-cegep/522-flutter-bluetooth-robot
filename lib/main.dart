@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'pages/functions_page_widget.dart';
-import 'ble/ble_manager.dart';
 
 void main() {
   runZonedGuarded(onStartUp, onCrashed);
 }
+
 void onStartUp() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await BLEManager.initialize();
   runApp(const HomePageWidget());
 }
 
@@ -43,7 +42,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
       title: 'Exemple de connexion BLE',
       theme: ThemeData(brightness: Brightness.light),
       darkTheme: ThemeData(brightness: Brightness.dark),
-      themeMode:  ThemeMode.light,
+      themeMode: ThemeMode.light,
       home: const FunctionsWidget(),
     );
   }

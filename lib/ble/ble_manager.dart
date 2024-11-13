@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bluetooth_low_energy/bluetooth_low_energy.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:projet_robot/ble/ble_peripheral.dart';
 
@@ -34,9 +35,14 @@ class BLEManager {
 
     // Abonnement aux changements d'état du Bluetooth Low Energy
     stateChangedSubscription = centralManager.stateChanged.listen(
-      (eventArgs) {
+      (eventArgs) async {
         // Mise à jour de l'état du Bluetooth Low Energy lorsqu'il change
-        state.value = eventArgs.state;
+        final state = eventArgs.state;
+        if (Platform.isAndroid &&
+            state == BluetoothLowEnergyState.unauthorized) {
+          await centralManager.authorize();
+        }
+        this.state.value = state;
       },
     );
 

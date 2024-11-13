@@ -7,11 +7,10 @@ import 'package:flutter/material.dart';
 /// Classe BLEManager qui gère la communication Bluetooth Low Energy (BLE)
 class BLEPeripheral {
   late CentralManager centralManager;
-  late Peripheral peripheral;
+  late Peripheral _peripheral;
   late bool _connected;
   late bool _ready;
   late final ValueNotifier<bool> state;
-  late final DiscoveredEventArgs eventArgs;
   late final ValueNotifier<List<GATTService>> services;
   late final ValueNotifier<List<GATTCharacteristic>> characteristics;
   late final ValueNotifier<GATTService?> service;
@@ -33,7 +32,7 @@ class BLEPeripheral {
   /// Constructeur de la classe BLEPeripheral
   BLEPeripheral(CentralManager manager, Peripheral periph) {
     centralManager = manager;
-    peripheral = periph;
+    _peripheral = periph;
     _connected = false;
     _ready = false;
     state = ValueNotifier(false);
@@ -46,38 +45,29 @@ class BLEPeripheral {
     rssi = ValueNotifier(-100);
 
     // Abonnement aux changements d'état du périphérique BLE
-    stateChangedSubscription = centralManager.peripheralStateChanged.listen(
-      (eventArgs) {
-        if (eventArgs.peripheral != this.eventArgs.peripheral) {
-          return;
-        }
-        final state = eventArgs.state;
-        this.state.value = state;
-        if (!state) {
-          services.value = [];
-          characteristics.value = [];
-          service.value = null;
-          characteristic.value = null;
-          disconnect();
-        }
-      },
-    );
+    // stateChangedSubscription = centralManager.peripheralStateChanged.listen(
+    //   (eventArgs) {
+    //     if (eventArgs.peripheral != _peripheral) {
+    //       return;
+    //     }
+    //     final state = eventArgs.state;
+    //     this.state.value = state;
+    //     if (!state) {
+    //       services.value = [];
+    //       characteristics.value = [];
+    //       service.value = null;
+    //       characteristic.value = null;
+    //       disconnect();
+    //     }
+    //   },
+    // );
 
-    // Abonnement aux changements de valeur de la caractéristique
-    valueChangedSubscription = centralManager.characteristicValueChanged.listen(
-      (eventArgs) {
-        final characteristic = this.characteristic.value;
-        if (eventArgs.characteristic != characteristic) {
-          return;
-        }
-      },
-    );
     rssiTimer = Timer.periodic(
       const Duration(seconds: 5),
       (timer) async {
         final state = this.state.value;
         if (state) {
-          rssi.value = await centralManager.readRSSI(eventArgs.peripheral);
+          rssi.value = await centralManager.readRSSI(_peripheral);
         } else {
           rssi.value = -100;
         }
@@ -87,14 +77,14 @@ class BLEPeripheral {
 
   /// Démarre la connexion au périphérique BLE
   Future<void> connect() async {
-    await centralManager.connect(peripheral);
-    services.value = await centralManager.discoverGATT(peripheral);
+    await centralManager.connect(_peripheral);
+    services.value = await centralManager.discoverGATT(_peripheral);
 
     maximumWriteLength.value = await centralManager.getMaximumWriteLength(
-      peripheral,
+      _peripheral,
       type: writeType.value,
     );
-    rssi.value = await centralManager.readRSSI(peripheral);
+    rssi.value = await centralManager.readRSSI(_peripheral);
     _connected = true;
   }
 
@@ -139,7 +129,7 @@ class BLEPeripheral {
 
   /// Déconnecte le périphérique BLE
   Future<void> disconnect() async {
-    await centralManager.disconnect(peripheral);
+    await centralManager.disconnect(_peripheral);
     maximumWriteLength.value = 0;
     rssi.value = 0;
     _connected = false;
@@ -191,7 +181,7 @@ class BLEPeripheral {
     if (!canRead) throw ArgumentError(canRead, 'canRead');
 
     final value =
-        await centralManager.readCharacteristic(peripheral, characteristic);
+        await centralManager.readCharacteristic(_peripheral, characteristic);
     final result = utf8.decode(value);
     return result;
   }
@@ -210,7 +200,7 @@ class BLEPeripheral {
     final value = Uint8List.fromList(elements);
     final type = writeType.value;
     await centralManager.writeCharacteristic(
-      peripheral,
+      _peripheral,
       characteristic,
       value: value,
       type: type,
