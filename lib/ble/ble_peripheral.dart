@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:bluetooth_low_energy_platform_interface/bluetooth_low_energy_platform_interface.dart';
+import 'package:bluetooth_low_energy/bluetooth_low_energy.dart';
 import 'package:flutter/material.dart';
-
 
 /// Classe BLEManager qui gère la communication Bluetooth Low Energy (BLE)
 class BLEPeripheral {
@@ -13,11 +12,11 @@ class BLEPeripheral {
   late bool _ready;
   late final ValueNotifier<bool> state;
   late final DiscoveredEventArgs eventArgs;
-  late final ValueNotifier<List<GattService>> services;
-  late final ValueNotifier<List<GattCharacteristic>> characteristics;
-  late final ValueNotifier<GattService?> service;
-  late final ValueNotifier<GattCharacteristic?> characteristic;
-  late final ValueNotifier<GattCharacteristicWriteType> writeType;
+  late final ValueNotifier<List<GATTService>> services;
+  late final ValueNotifier<List<GATTCharacteristic>> characteristics;
+  late final ValueNotifier<GATTService?> service;
+  late final ValueNotifier<GATTCharacteristic?> characteristic;
+  late final ValueNotifier<GATTCharacteristicWriteType> writeType;
   late final ValueNotifier<int> maximumWriteLength;
   late final ValueNotifier<int> rssi;
   late final StreamSubscription stateChangedSubscription;
@@ -29,7 +28,7 @@ class BLEPeripheral {
   bool get isReady => _ready;
 
 // Fonction de rappel, lorsqu'un périphérique est trouvé
-  void Function()? onPeripheralReady; 
+  void Function()? onPeripheralReady;
 
   /// Constructeur de la classe BLEPeripheral
   BLEPeripheral(CentralManager manager, Peripheral periph) {
@@ -42,7 +41,7 @@ class BLEPeripheral {
     characteristics = ValueNotifier([]);
     service = ValueNotifier(null);
     characteristic = ValueNotifier(null);
-    writeType = ValueNotifier(GattCharacteristicWriteType.withResponse);
+    writeType = ValueNotifier(GATTCharacteristicWriteType.withResponse);
     maximumWriteLength = ValueNotifier(0);
     rssi = ValueNotifier(-100);
 
@@ -89,11 +88,9 @@ class BLEPeripheral {
   /// Démarre la connexion au périphérique BLE
   Future<void> connect() async {
     await centralManager.connect(peripheral);
-    services.value =
-        await centralManager.discoverGATT(peripheral);    
-    
-    maximumWriteLength.value =
-        await centralManager.getMaximumWriteLength(
+    services.value = await centralManager.discoverGATT(peripheral);
+
+    maximumWriteLength.value = await centralManager.getMaximumWriteLength(
       peripheral,
       type: writeType.value,
     );
@@ -104,20 +101,19 @@ class BLEPeripheral {
   /// Valide si le service est contenu dans la liste des services du périphérique.
   bool isContainService(String srvUuid) {
     for (var srv in services.value) {
-      if(srv.uuid.toString() == srvUuid) {
+      if (srv.uuid.toString() == srvUuid) {
         return true;
       }
     }
     return false;
   }
 
-
-
   /// Défini le service et la caractéristique à utiliser.
   Future<void> setActiveCharacteristic(String srvUuid, String charUuid) async {
-    debugPrint('  -> Recherche du service $srvUuid et de la caractéristique $charUuid');
+    debugPrint(
+        '  -> Recherche du service $srvUuid et de la caractéristique $charUuid');
     for (var srv in services.value) {
-      if(srv.uuid.toString() == srvUuid) {
+      if (srv.uuid.toString() == srvUuid) {
         service.value = srv;
         debugPrint('  -> Service trouvé: ${service.value?.uuid.toString()}');
         characteristic.value = null;
@@ -138,7 +134,7 @@ class BLEPeripheral {
         }
         break;
       }
-    } 
+    }
   }
 
   /// Déconnecte le périphérique BLE
@@ -151,7 +147,7 @@ class BLEPeripheral {
   }
 
   void dispose() {
-    if(_connected) {
+    if (_connected) {
       disconnect();
     }
 
@@ -168,26 +164,34 @@ class BLEPeripheral {
     rssi.dispose();
   }
 
-  /// Envoie une demande de notification au périphérique.
-  Future<void> notify(String text) async {
-    final characteristic = this.characteristic.value;
-    if (characteristic == null) throw ArgumentError.notNull('characteristic');
+  // /// Envoie une demande de notification au périphérique.
+  // Future<void> notify(String text) async {
+  //   final characteristic = this.characteristic.value;
+  //   if (characteristic == null) throw ArgumentError.notNull('characteristic');
 
-    final canNotify = characteristic.properties.contains(GattCharacteristicProperty.notify,);
-    if (!canNotify) throw ArgumentError(canNotify, 'canNotify');
-  
-    await centralManager.notifyCharacteristic(characteristic, state: true,);
-  }
+  //   final canNotify = characteristic.properties.contains(
+  //     GATTCharacteristicProperty.notify,
+  //   );
+  //   if (!canNotify) throw ArgumentError(canNotify, 'canNotify');
+
+  //   await centralManager.notifyCharacteristic(
+  //     characteristic,
+  //     state: true,
+  //   );
+  // }
 
   /// Envoie une demande de lecture au périphérique.
   Future<String> read(String text) async {
     final characteristic = this.characteristic.value;
     if (characteristic == null) throw ArgumentError.notNull('characteristic');
 
-    final canRead = characteristic.properties.contains(GattCharacteristicProperty.read,);
+    final canRead = characteristic.properties.contains(
+      GATTCharacteristicProperty.read,
+    );
     if (!canRead) throw ArgumentError(canRead, 'canRead');
-    
-    final value = await centralManager.readCharacteristic(characteristic);
+
+    final value =
+        await centralManager.readCharacteristic(peripheral, characteristic);
     final result = utf8.decode(value);
     return result;
   }
@@ -197,13 +201,16 @@ class BLEPeripheral {
     final characteristic = this.characteristic.value;
     if (characteristic == null) throw ArgumentError.notNull('characteristic');
 
-    final canWrite = characteristic.properties.contains(GattCharacteristicProperty.write,);
+    final canWrite = characteristic.properties.contains(
+      GATTCharacteristicProperty.write,
+    );
     if (!canWrite) throw ArgumentError(canWrite, 'canWrite');
-  
+
     final elements = utf8.encode(text);
     final value = Uint8List.fromList(elements);
     final type = writeType.value;
     await centralManager.writeCharacteristic(
+      peripheral,
       characteristic,
       value: value,
       type: type,

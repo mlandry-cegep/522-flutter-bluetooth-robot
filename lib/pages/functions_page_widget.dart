@@ -43,7 +43,7 @@ class _FunctionsWidgetState extends State<FunctionsWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.primary,
           automaticallyImplyLeading: false,
@@ -51,14 +51,14 @@ class _FunctionsWidgetState extends State<FunctionsWidget> {
             alignment: const AlignmentDirectional(0.00, 0.00),
             child: FaIcon(
               FontAwesomeIcons.robot,
-              color: Theme.of(context).colorScheme.background,
+              color: Theme.of(context).colorScheme.surface,
               size: 32,
             ),
           ),
           title: Text(
             'Projet d\'intégration',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: Theme.of(context).colorScheme.background,
+              color: Theme.of(context).colorScheme.surface,
             )
           ),
           actions: const [],
@@ -76,8 +76,8 @@ class _FunctionsWidgetState extends State<FunctionsWidget> {
                   padding: const EdgeInsetsDirectional.fromSTEB(0, 10, 0, 0),
                   child: TextButton(
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.blueGrey),
-                      foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                      backgroundColor: WidgetStateProperty.all<Color>(Colors.blueGrey),
+                      foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                     ),
                     onPressed:  () async { await startDiscovery(); },
                     child: const Text('Scan Bluetooth'),
@@ -87,8 +87,8 @@ class _FunctionsWidgetState extends State<FunctionsWidget> {
                   padding: const EdgeInsetsDirectional.fromSTEB(0, 10, 0, 0),
                   child: TextButton(
                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
-                              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                              backgroundColor: WidgetStateProperty.all<Color>(Colors.red),
+                              foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                             ),
                             onPressed: () { 
                               // Vérification de la connexion avant de lancer la fonction
@@ -107,8 +107,8 @@ class _FunctionsWidgetState extends State<FunctionsWidget> {
                   padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 40),
                   child: TextButton(
                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
-                              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                              backgroundColor: WidgetStateProperty.all<Color>(Colors.red),
+                              foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                             ),
                             onPressed: () async { 
                               // Vérification de la connexion avant de lancer la fonction
