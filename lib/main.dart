@@ -13,8 +13,14 @@ class BLECommanderApp extends StatelessWidget {
     return MaterialApp(
       title: 'BLE Commander',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.dark,
+        ),
+        scaffoldBackgroundColor: const Color(0xFF121212),
       ),
+      themeMode: ThemeMode.dark,
       home: const DeviceListScreen(),
     );
   }
